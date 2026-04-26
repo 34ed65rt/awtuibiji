@@ -5,47 +5,465 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>爱玩推币机</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:微软雅黑}
-        body{background:#0b122b;color:#fff;padding-bottom:70px}
-        .page{display:none;padding:15px}
-        .page.active{display:block}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #0b122b;
+            color: #fff;
+            padding-bottom: 70px;
+        }
 
-        /* 登录注册 */
-        .login-box{max-width:400px;margin:60px auto;background:#0f253a;border:2px solid #35f0ff;border-radius:16px;padding:30px}
-        .login-box h2{color:#35f0ff;text-align:center;margin-bottom:20px}
-        input{width:100%;padding:12px;margin:8px 0;background:#0b122b;color:#fff;border:1px solid #35f0ff;border-radius:8px}
-        .btn{width:100%;padding:12px;background:#35f0ff;color:#000;border:none;border-radius:8px;margin-top:10px;font-weight:bold}
-        .link{text-align:center;margin-top:10px;color:#ccc}
-        .link span{color:#35f0ff;cursor:pointer}
-        .agree{display:flex;align-items:center;margin:10px 0;color:#ccc;gap:6px}
-        .agree input{width:auto}
-        .agree span{color:#35f0ff;cursor:pointer}
+        /* 通用 */
+        .page {
+            display: none;
+            padding: 15px;
+        }
+        .page.active {
+            display: block;
+        }
+        .err-text {
+            color: #ff3333;
+            font-size: 13px;
+            margin: 2px 0 8px 0;
+            display: block;
+        }
+        .back-btn {
+            background: #35f0ff;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        /* 登录/注册 */
+        .login-box {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #0f253a;
+            border: 2px solid #35f0ff;
+            border-radius: 16px;
+            padding: 30px;
+        }
+        .login-box h2 {
+            color: #35f0ff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #0b122b;
+            color: #fff;
+            border: 1px solid #35f0ff;
+            border-radius: 8px;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #35f0ff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .link {
+            text-align: center;
+            margin-top: 10px;
+            color: #ccc;
+        }
+        .link span {
+            color: #35f0ff;
+            cursor: pointer;
+        }
+        .agree {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #ccc;
+            gap: 6px;
+        }
+        .agree input {
+            width: auto;
+        }
+        .agree span {
+            color: #35f0ff;
+            cursor: pointer;
+        }
 
         /* 底部导航 */
-        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0b122b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #223}
-        .nav-item{text-align:center;color:#889;cursor:pointer}
-        .nav-item.active{color:#35f0ff}
-        .nav-item .icon{font-size:22px;display:block}
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0b122b;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #223;
+        }
+        .nav-item {
+            text-align: center;
+            color: #889;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: #35f0ff;
+        }
+        .nav-item .icon {
+            font-size: 22px;
+            display: block;
+        }
 
-        /* 首页 */
-        .top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
-        .avatar{width:60px;height:60px;border-radius:50%;background:#ffc107;display:flex;align-items:center;justify-content:center;color:#000}
-        .banner{background:#112a45;border-radius:12px;padding:15px;text-align:center;margin:10px 0}
-        .func-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;text-align:center;margin:10px 0}
-        .game-tab{display:flex;justify-content:space-around;margin:10px 0}
-        .game-tab span{cursor:pointer}
-        .game-tab span.active{color:#35f0ff;border-bottom:2px solid #35f0ff}
-        .filter-tab{display:flex;gap:10px;margin:15px 0;overflow-x:auto}
-        .filter-tab span{padding:8px 20px;border-radius:20px;background:#1a2a3a;color:#ff69b4;cursor:pointer;white-space:nowrap}
-        .filter-tab span.active{background:#35f0ff;color:#000}
-        .game-list{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-        .game-card{background:#0f253a;border-radius:12px;overflow:hidden}
-        .game-card img{width:100%;height:140px}
-        .game-info{padding:10px}
-        .currency{display:flex;gap:12px}
+        /* ========== 首页样式 ========== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ffc107;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .vip-tag {
+            font-size: 12px;
+            color: #ffc107;
+        }
+        .currency-bar {
+            display: flex;
+            gap: 15px;
+        }
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #35f0ff;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+        .banner {
+            background: #e8f5e9;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            color: #000;
+        }
+        .func-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .func-item {
+            font-size: 12px;
+            color: #ff69b4;
+            cursor: pointer;
+        }
+        .func-item .icon {
+            font-size: 28px;
+            color: #ff69b4;
+            margin-bottom: 5px;
+        }
+        .game-tab {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+        .game-tab span {
+            color: #ff69b4;
+            cursor: pointer;
+        }
+        .game-tab span.active {
+            color: #35f0ff;
+            border-bottom: 2px solid #35f0ff;
+        }
+        .filter-tab {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .filter-tab span {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: #1a2a3a;
+            color: #ff69b4;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .filter-tab span.active {
+            background: #35f0ff;
+            color: #000;
+        }
+        .game-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .game-card {
+            background: #1a2a3a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .game-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        .game-info {
+            padding: 10px;
+        }
+        .game-status {
+            color: #ff40a0;
+            text-align: right;
+        }
 
-        /* 用户协议 */
-        .agreement{background:#0f253a;border:2px solid #35f0ff;border-radius:16px;padding:25px;margin:20px;line-height:1.8}
+        /* ========== 排行页面样式 ========== */
+        .rank-header {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .rank-header span {
+            color: #ff69b4;
+            cursor: pointer;
+        }
+        .rank-header span.active {
+            color: #35f0ff;
+            border-bottom: 2px solid #35f0ff;
+        }
+        .my-rank-box {
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top3-list {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .top3-item {
+            text-align: center;
+        }
+        .top3-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #333;
+            margin: 0 auto 5px;
+        }
+        .top3-name {
+            font-size: 14px;
+        }
+        .top3-score {
+            font-size: 12px;
+            color: #35f0ff;
+        }
+        .rank-table {
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #223;
+        }
+
+        /* ========== 兑换页面样式 ========== */
+        .exchange-header {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .exchange-header span {
+            color: #ff69b4;
+            cursor: pointer;
+        }
+        .exchange-header span.active {
+            color: #35f0ff;
+            border-bottom: 2px solid #35f0ff;
+        }
+        .exchange-box {
+            background: #1a2a3a;
+            border: 2px solid #35f0ff;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .exchange-ratio {
+            background: #222;
+            color: #ffc107;
+            padding: 8px;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid #35f0ff;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .input-group span {
+            padding: 0 15px;
+            color: #35f0ff;
+        }
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 12px;
+            outline: none;
+        }
+        .exchange-record {
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .record-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #223;
+        }
+        .record-text {
+            color: #35f0ff;
+        }
+        .record-time {
+            color: #ff69b4;
+            font-size: 12px;
+        }
+        .record-points {
+            color: #ffc107;
+            text-align: right;
+        }
+
+        /* ========== 充值页面样式 ========== */
+        .recharge-header {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .recharge-header span {
+            color: #ff69b4;
+            cursor: pointer;
+        }
+        .recharge-header span.active {
+            color: #35f0ff;
+            border-bottom: 2px solid #35f0ff;
+        }
+        .package-section {
+            margin-bottom: 20px;
+        }
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .package-card {
+            background: #1a2a3a;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+        }
+        .package-top {
+            padding: 15px;
+        }
+        .package-bottom {
+            background: #35f0ff;
+            color: #000;
+            padding: 8px;
+        }
+
+        /* ========== 我的页面样式 ========== */
+        .my-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 5px;
+            background: #222;
+            border-radius: 5px;
+        }
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: #35f0ff;
+            border-radius: 5px;
+        }
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .my-func-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .my-func-item {
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .my-menu-list {
+            background: #1a2a3a;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .my-menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #223;
+        }
     </style>
 </head>
 <body>
@@ -55,13 +473,15 @@
     <div class="login-box">
         <h2>登录</h2>
         <input id="login_user" placeholder="输入账号">
+        <span class="err-text" id="loginErr"></span>
         <input id="login_pwd" placeholder="输入密码" type="password">
-        
+
         <div class="agree">
             <input type="checkbox" id="agree">
             <label>我已同意</label>
             <span onclick="showPage('agreementPage')">《用户协议》</span>
         </div>
+        <span class="err-text" id="agreeErr"></span>
 
         <button class="btn" onclick="userLogin()">登录</button>
         <div class="link">没有账号？<span onclick="showPage('regPage')">去注册</span></div>
@@ -73,16 +493,26 @@
     <div class="login-box">
         <h2>注册</h2>
         <input id="reg_user" placeholder="账号">
+        <span class="err-text" id="userErr"></span>
+
         <input id="reg_pwd" placeholder="密码">
-        <input id="reg_phone" placeholder="手机号">
+        <span class="err-text" id="pwdErr"></span>
+
         <input id="reg_name" placeholder="姓名">
+        <span class="err-text" id="nameErr"></span>
+
+        <input id="reg_phone" placeholder="手机号">
+        <span class="err-text" id="phoneErr"></span>
+
         <input id="reg_idcard" placeholder="身份证号">
+        <span class="err-text" id="idcardErr"></span>
 
         <div class="agree">
             <input type="checkbox" id="reg_agree">
             <label>我已同意</label>
             <span onclick="showPage('agreementPage')">《用户协议》</span>
         </div>
+        <span class="err-text" id="regAgreeErr"></span>
 
         <button class="btn" onclick="userReg()">注册</button>
         <div class="link">已有账号？<span onclick="showPage('loginPage')">去登录</span></div>
@@ -91,43 +521,52 @@
 
 <!-- ====================== 用户协议 ====================== -->
 <div class="page" id="agreementPage">
-    <button class="btn" onclick="showPage('loginPage')" style="margin:20px">返回</button>
-    <div class="agreement">
+    <button class="back-btn" onclick="showPage('loginPage')">返回</button>
+    <div class="login-box" style="max-width: unset; margin: 20px;">
         <h3 style="text-align:center;margin-bottom:10px">用户协议</h3>
-        <p>1. 本平台仅供娱乐，所有虚拟道具不具备现金价值。</p >
-        <p>2. 严禁使用外挂、作弊工具，违者封号处理。</p >
-        <p>3. 充值虚拟币一旦充值，不支持退款。</p >
-        <p>4. 用户必须遵守国家法律法规及平台规则。</p >
-        <p>5. 最终解释权归本平台所有。</p >
+        <p style="line-height: 1.8;">1. 本平台仅供娱乐，所有虚拟道具不具备现金价值。</p>
+        <p style="line-height: 1.8;">2. 严禁使用外挂、作弊工具，违者封号处理。</p>
+        <p style="line-height: 1.8;">3. 充值虚拟币一旦充值，不支持退款。</p>
+        <p style="line-height: 1.8;">4. 用户必须遵守国家法律法规及平台规则。</p>
+        <p style="line-height: 1.8;">5. 最终解释权归本平台所有。</p>
     </div>
 </div>
 
 <!-- ====================== 首页 ====================== -->
 <div class="page" id="homePage">
     <div class="top-bar">
-        <div class="avatar" id="avatar">玩</div>
-        <div>
-            <h3 id="home_username">玩家</h3>
-            <p>ID: <span id="home_uid">0</span></p >
+        <div class="user-info">
+            <div class="avatar" id="avatar">玩</div>
+            <div>
+                <h3 id="home_username">爱玩推币机</h3>
+                <p class="vip-tag">VIP0</p>
+            </div>
         </div>
-        <div class="currency">
-            <div>🪙<span id="home_coins">0</span></div>
-            <div>💎<span id="home_gems">0</span></div>
-            <div>⭐<span id="home_points">0</span></div>
+        <div class="currency-bar">
+            <div class="currency-item">
+                <span style="font-size:20px">🪙</span>
+                <span id="home_coins">1</span>
+                <span style="color:#35f0ff">+</span>
+            </div>
+            <div class="currency-item">
+                <span style="font-size:20px">💎</span>
+                <span id="home_gems">0</span>
+                <span style="color:#35f0ff">+</span>
+            </div>
         </div>
     </div>
 
     <div class="banner">
         <h3>拉霸厅1</h3>
-        <p>无流量放心玩</p >
+        <p>无流量放心玩</p>
     </div>
 
     <div class="func-grid">
-        <div onclick="showPage('taskPage')"><div class="icon">🎁</div>任务福利</div>
-        <div onclick="showPage('forumPage')"><div class="icon">✉️</div>交流广场</div>
-        <div onclick="showPage('mailPage')"><div class="icon">💬</div>邮件</div>
-        <div onclick="showPage('servicePage')"><div class="icon">👩‍💼</div>客服</div>
-        <div onclick="showPage('vipPage')"><div class="icon">⭐</div>会员权益</div>
+        <div class="func-item"><div class="icon">🎁</div>任务福利</div>
+        <div class="func-item"><div class="icon">✉️</div>交流广场</div>
+        <div class="func-item"><div class="icon">💬</div>邮件</div>
+        <div class="func-item"><div class="icon">👩‍💼</div>在线客服</div>
+        <div class="func-item"><div class="icon">⭐</div>会员权益</div>
     </div>
 
     <div class="game-tab">
@@ -146,37 +585,273 @@
 
     <div class="game-list">
         <div class="game-card" onclick="enterGame()">
-            < img src="https://picsum.photos/300/140">
-            <div class="game-info"><p>黄金一号1-1币</p ><p style="color:#ff40a0">锁机中</p ></div>
+            <img src="https://picsum.photos/300/140">
+            <div class="game-info">
+                <p>黄金一号1-1币</p>
+                <p class="game-status">锁机中</p>
+            </div>
         </div>
         <div class="game-card" onclick="enterGame()">
-            < img src="https://picsum.photos/301/140">
-            <div class="game-info"><p>黄金一号2-1币</p ><p style="color:#ff40a0">热玩中</p ></div>
+            <img src="https://picsum.photos/301/140">
+            <div class="game-info">
+                <p>黄金一号2-1币</p>
+                <p class="game-status">热玩中</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 排行 ====================== -->
+<div class="page" id="rankPage">
+    <div class="rank-header">
+        <span class="active">积分榜</span>
+        <span>充值榜</span>
+    </div>
+
+    <div class="my-rank-box">
+        <div class="user-info">
+            <div class="avatar" style="width:40px;height:40px">玩</div>
+            <div>
+                <h3>爱玩推币机</h3>
+                <p>0积分</p>
+            </div>
+        </div>
+        <div>
+            <p style="color:#35f0ff">未上榜</p>
+            <p style="color:#ff69b4">当前排行</p>
+        </div>
+    </div>
+
+    <div class="top3-list">
+        <div class="top3-item">
+            <div class="top3-avatar" style="background:#ccc">🐰</div>
+            <p>TOP 2</p>
+            <p>导***鼠</p>
+            <p class="top3-score">积分: 984880</p>
+        </div>
+        <div class="top3-item">
+            <div class="top3-avatar" style="background:#ffc107">👑</div>
+            <p>TOP 1</p>
+            <p>梁***梁</p>
+            <p class="top3-score">积分: 1288560</p>
+        </div>
+        <div class="top3-item">
+            <div class="top3-avatar" style="background:#ccc">🐱</div>
+            <p>TOP 3</p>
+            <p>金***币</p>
+            <p class="top3-score">积分: 914161</p>
+        </div>
+    </div>
+
+    <div class="rank-table">
+        <div class="rank-item">
+            <span>4</span>
+            <div class="user-info">
+                <div class="avatar" style="width:30px;height:30px">🎰</div>
+                <span>推***进</span>
+            </div>
+            <span>554320分</span>
+            <span>0币</span>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 兑换 ====================== -->
+<div class="page" id="exchangePage">
+    <div class="exchange-header">
+        <span class="active">积分兑换</span>
+        <span>CDK兑换</span>
+    </div>
+
+    <div class="exchange-box">
+        <p>我的积分</p>
+        <p style="font-size:30px">⭐ <span id="my_points">8</span></p>
+        <div class="exchange-ratio">当前为VIP0，兑换比例11:1，可兑换金0币</div>
+        <div class="input-group">
+            <span>兑换 全部兑换</span>
+            <input placeholder="请输入金币">
+        </div>
+        <button class="btn" style="background: linear-gradient(180deg, #35f0ff, #1a8cff); color:#000">立即兑换</button>
+    </div>
+
+    <div class="exchange-record">
+        <p style="color:#35f0ff;margin-bottom:10px">兑换明细</p>
+        <div class="record-item">
+            <p class="record-text">兑换141金币</p>
+            <p class="record-time">2026-04-26 14:06:51</p>
+            <p class="record-points">-1551积分</p>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 充值 ====================== -->
+<div class="page" id="rechargePage">
+    <div class="top-bar">
+        <div class="user-info">
+            <div class="avatar" style="width:40px;height:40px">玩</div>
+            <div>
+                <h3>爱玩推币机</h3>
+                <p class="vip-tag">VIP0</p>
+            </div>
+        </div>
+        <div class="currency-bar">
+            <div class="currency-item">
+                <span style="font-size:20px">🪙</span>
+                <span id="recharge_coins">1</span>
+                <span style="color:#35f0ff">+</span>
+            </div>
+            <div class="currency-item">
+                <span style="font-size:20px">💎</span>
+                <span id="recharge_gems">0</span>
+                <span style="color:#35f0ff">+</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="recharge-header">
+        <span class="active">金币</span>
+        <span>周卡/月卡</span>
+        <span>钻石</span>
+    </div>
+
+    <div class="package-section">
+        <p style="color:#ff69b4;margin-bottom:10px">活动特惠包</p>
+        <div class="package-grid">
+            <div class="package-card">
+                <div class="package-top">
+                    <p>优惠1</p>
+                    <p>🪙 ×1088</p>
+                </div>
+                <div class="package-bottom">¥38.00</div>
+            </div>
+            <div class="package-card">
+                <div class="package-top">
+                    <p>优惠2</p>
+                    <p>🪙 ×2888</p>
+                </div>
+                <div class="package-bottom">¥100.00</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 我的 ====================== -->
+<div class="page" id="profilePage">
+    <div class="my-header">
+        <div class="avatar" style="width:60px;height:60px">玩</div>
+        <div>
+            <h3>爱玩推币机</h3>
+            <p>ID: 1314</p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p style="color:#ff69b4">再充值20元升级</p>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <div>
+            <p style="color:#35f0ff">8</p>
+            <p style="color:#ff69b4">积分</p>
+        </div>
+        <div>
+            <p style="color:#35f0ff">0</p>
+            <p style="color:#ff69b4">钻石</p>
+        </div>
+        <div>
+            <p style="color:#35f0ff">1</p>
+            <p style="color:#ff69b4">金币</p>
+        </div>
+    </div>
+
+    <div class="my-func-grid">
+        <div class="my-func-item" style="background:#ffc107;color:#000">
+            <div>
+                <p>会员权益</p>
+            </div>
+            <span style="font-size:30px">🏆</span>
+        </div>
+        <div class="my-func-item" style="background:#1a8cff;color:#fff">
+            <div>
+                <p>任务福利</p>
+            </div>
+            <span style="font-size:30px">🎁</span>
+        </div>
+    </div>
+
+    <div class="my-menu-list">
+        <div class="my-menu-item">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="color:#35f0ff">ℹ️</span>
+                <span>游戏说明</span>
+            </div>
+            <span style="color:#35f0ff">></span>
+        </div>
+        <div class="my-menu-item">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="color:#35f0ff">💳</span>
+                <span>我的账单</span>
+            </div>
+            <span style="color:#35f0ff">></span>
         </div>
     </div>
 </div>
 
 <!-- ====================== 底部导航 ====================== -->
 <div class="bottom-nav" id="bottomNav">
-    <div class="nav-item active" onclick="showPage('homePage')"><div class="icon">🏠</div>首页</div>
-    <div class="nav-item" onclick="showPage('rankPage')"><div class="icon">📶</div>排行</div>
-    <div class="nav-item" onclick="showPage('exchangePage')"><div class="icon">🔄</div>兑换</div>
-    <div class="nav-item" onclick="showPage('rechargePage')"><div class="icon">¥</div>充值</div>
-    <div class="nav-item" onclick="showPage('profilePage')"><div class="icon">👤</div>我的</div>
+    <div class="nav-item active" onclick="showPage('homePage')">
+        <div class="icon">🏠</div>
+        <span>首页</span>
+    </div>
+    <div class="nav-item" onclick="showPage('rankPage')">
+        <div class="icon">📊</div>
+        <span>排行</span>
+    </div>
+    <div class="nav-item" onclick="showPage('exchangePage')">
+        <div class="icon">🔄</div>
+        <span>兑换</span>
+    </div>
+    <div class="nav-item" onclick="showPage('rechargePage')">
+        <div class="icon">¥</div>
+        <span>充值</span>
+    </div>
+    <div class="nav-item" onclick="showPage('profilePage')">
+        <div class="icon">👤</div>
+        <span>我的</span>
+    </div>
 </div>
 
 <script>
+// 清空所有错误提示
+function clearAllErr(){
+    document.querySelectorAll('.err-text').forEach(el=>el.innerText="");
+}
+
 // 切换页面
 function showPage(id) {
+    clearAllErr();
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    
+
     // 登录/注册/协议页隐藏底部导航
     let nav = document.getElementById('bottomNav');
     if(id === 'loginPage' || id === 'regPage' || id === 'agreementPage') {
         nav.style.display = 'none';
     } else {
         nav.style.display = 'flex';
+    }
+
+    // 更新底部导航选中状态
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    const pageMap = {
+        'homePage': 0,
+        'rankPage': 1,
+        'exchangePage': 2,
+        'rechargePage': 3,
+        'profilePage': 4
+    };
+    if(pageMap.hasOwnProperty(id)) {
+        document.querySelectorAll('.nav-item')[pageMap[id]].classList.add('active');
     }
 }
 
@@ -190,7 +865,6 @@ function switchGame(n) {
 // 进入游戏（必须登录）
 function enterGame() {
     if(!localStorage.getItem('loginUser')){
-        alert('请先登录！');
         showPage('loginPage');
         return;
     }
@@ -220,50 +894,48 @@ function userReg() {
 
     // 1. 协议校验
     if(!document.getElementById('reg_agree').checked) {
-        alert('请勾选同意用户协议');
+        document.getElementById('regAgreeErr').innerText = '请阅读并同意用户协议';
         return;
     }
 
     // 2. 非空校验
-    if(!user || !pwd) {
-        alert('账号和密码不能为空');
+    if(!user) {
+        document.getElementById('userErr').innerText = '账号不能为空';
+        return;
+    }
+    if(localStorage.getItem('user_'+user)) {
+        document.getElementById('userErr').innerText = '账号已存在，请更换';
+        return;
+    }
+    if(!pwd) {
+        document.getElementById('pwdErr').innerText = '密码不能为空';
         return;
     }
     if(!name) {
-        alert('姓名不能为空');
+        document.getElementById('nameErr').innerText = '姓名不能为空';
         return;
     }
     if(!phone) {
-        alert('手机号不能为空');
+        document.getElementById('phoneErr').innerText = '手机号不能为空';
         return;
     }
     if(!idcard) {
-        alert('身份证号不能为空');
+        document.getElementById('idcardErr').innerText = '身份证号不能为空';
         return;
     }
 
-    // 3. 手机号格式校验（11位数字）
+    // 3. 格式校验
     if(!/^1\d{10}$/.test(phone)) {
-        alert('手机号格式错误，请输入11位有效手机号');
+        document.getElementById('phoneErr').innerText = '手机号格式错误';
         return;
     }
-
-    // 4. 身份证号格式校验（18位）
     if(!/^\d{17}[\dXx]$/.test(idcard)) {
-        alert('身份证号格式错误，请输入18位有效身份证号');
+        document.getElementById('idcardErr').innerText = '身份证号格式错误';
         return;
     }
 
-    // 5. 账号重复校验
-    if(localStorage.getItem('user_'+user)) {
-        alert('账号已存在，请换一个');
-        return;
-    }
-
-    // 6. 自动分配ID（从1000开始递增）
+    // 4. 保存用户数据
     let uid = getNextUid();
-
-    // 7. 保存用户数据（金币/钻石/积分默认值）
     let userData = {
         user: user,
         pwd: pwd,
@@ -283,20 +955,32 @@ function userReg() {
 
 // 登录
 function userLogin() {
-    if(!document.getElementById('agree').checked) {
-        alert('请勾选同意用户协议');
-        return;
-    }
+    clearAllErr();
     let user = document.getElementById('login_user').value.trim();
     let pwd = document.getElementById('login_pwd').value.trim();
-    let data = localStorage.getItem('user_'+user);
-    if(!data){
-        alert('用户不存在');
+    let agree = document.getElementById('agree').checked;
+
+    if(!agree) {
+        document.getElementById('agreeErr').innerText = '请阅读并同意用户协议';
         return;
     }
-    let u = JSON.parse(data);
-    if(u.pwd !== pwd){
-        alert('密码错误');
+    if(!user) {
+        document.getElementById('loginErr').innerText = '账号不能为空';
+        return;
+    }
+    if(!pwd) {
+        document.getElementById('loginErr').innerText = '密码不能为空';
+        return;
+    }
+
+    let userData = localStorage.getItem('user_'+user);
+    if(!userData) {
+        document.getElementById('loginErr').innerText = '该账号不存在';
+        return;
+    }
+    let u = JSON.parse(userData);
+    if(u.pwd !== pwd) {
+        document.getElementById('loginErr').innerText = '密码输入错误';
         return;
     }
 
@@ -305,7 +989,7 @@ function userLogin() {
     showPage('homePage');
 }
 
-// 加载用户信息（从数据库读取，显示在首页）
+// 加载用户信息
 function loadUserInfo() {
     let loginUser = localStorage.getItem('loginUser');
     if(!loginUser) return;
@@ -313,10 +997,11 @@ function loadUserInfo() {
 
     document.getElementById('avatar').innerText = u.name.substring(0,1);
     document.getElementById('home_username').innerText = u.user;
-    document.getElementById('home_uid').innerText = u.uid;
     document.getElementById('home_coins').innerText = u.coins;
     document.getElementById('home_gems').innerText = u.gems;
-    document.getElementById('home_points').innerText = u.points;
+    document.getElementById('my_points').innerText = u.points;
+    document.getElementById('recharge_coins').innerText = u.coins;
+    document.getElementById('recharge_gems').innerText = u.gems;
 }
 
 // 退出登录
