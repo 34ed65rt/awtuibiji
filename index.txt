@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱玩推币机</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:微软雅黑}
+        body{background:#0b122b;color:#fff;padding-bottom:70px}
+        .page{display:none;padding:15px}
+        .page.active{display:block}
+
+        /* 登录注册 */
+        .login-box{max-width:400px;margin:60px auto;background:#0f253a;border:2px solid #35f0ff;border-radius:16px;padding:30px}
+        .login-box h2{color:#35f0ff;text-align:center;margin-bottom:20px}
+        input{width:100%;padding:12px;margin:8px 0;background:#0b122b;color:#fff;border:1px solid #35f0ff;border-radius:8px}
+        .btn{width:100%;padding:12px;background:#35f0ff;color:#000;border:none;border-radius:8px;margin-top:10px;font-weight:bold}
+        .link{text-align:center;margin-top:10px;color:#ccc}
+        .link span{color:#35f0ff;cursor:pointer}
+        .agree{display:flex;align-items:center;margin:10px 0;color:#ccc;gap:6px}
+        .agree input{width:auto}
+        .agree span{color:#35f0ff;cursor:pointer}
+
+        /* 底部导航 */
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0b122b;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #223}
+        .nav-item{text-align:center;color:#889;cursor:pointer}
+        .nav-item.active{color:#35f0ff}
+        .nav-item .icon{font-size:22px;display:block}
+
+        /* 首页 */
+        .top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+        .avatar{width:60px;height:60px;border-radius:50%;background:#ffc107;display:flex;align-items:center;justify-content:center;color:#000}
+        .banner{background:#112a45;border-radius:12px;padding:15px;text-align:center;margin:10px 0}
+        .func-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;text-align:center;margin:10px 0}
+        .game-tab{display:flex;justify-content:space-around;margin:10px 0}
+        .game-tab span{cursor:pointer}
+        .game-tab span.active{color:#35f0ff;border-bottom:2px solid #35f0ff}
+        .filter-tab{display:flex;gap:10px;margin:15px 0;overflow-x:auto}
+        .filter-tab span{padding:8px 20px;border-radius:20px;background:#1a2a3a;color:#ff69b4;cursor:pointer;white-space:nowrap}
+        .filter-tab span.active{background:#35f0ff;color:#000}
+        .game-list{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+        .game-card{background:#0f253a;border-radius:12px;overflow:hidden}
+        .game-card img{width:100%;height:140px}
+        .game-info{padding:10px}
+        .currency{display:flex;gap:12px}
+
+        /* 用户协议 */
+        .agreement{background:#0f253a;border:2px solid #35f0ff;border-radius:16px;padding:25px;margin:20px;line-height:1.8}
+    </style>
+</head>
+<body>
+
+<!-- ====================== 登录页 ====================== -->
+<div class="page active" id="loginPage">
+    <div class="login-box">
+        <h2>登录</h2>
+        <input id="login_user" placeholder="输入账号">
+        <input id="login_pwd" placeholder="输入密码" type="password">
+        
+        <div class="agree">
+            <input type="checkbox" id="agree">
+            <label>我已同意</label>
+            <span onclick="showPage('agreementPage')">《用户协议》</span>
+        </div>
+
+        <button class="btn" onclick="userLogin()">登录</button>
+        <div class="link">没有账号？<span onclick="showPage('regPage')">去注册</span></div>
+    </div>
+</div>
+
+<!-- ====================== 注册页 ====================== -->
+<div class="page" id="regPage">
+    <div class="login-box">
+        <h2>注册</h2>
+        <input id="reg_user" placeholder="账号">
+        <input id="reg_pwd" placeholder="密码">
+        <input id="reg_phone" placeholder="手机号">
+        <input id="reg_name" placeholder="姓名">
+        <input id="reg_idcard" placeholder="身份证号">
+
+        <div class="agree">
+            <input type="checkbox" id="reg_agree">
+            <label>我已同意</label>
+            <span onclick="showPage('agreementPage')">《用户协议》</span>
+        </div>
+
+        <button class="btn" onclick="userReg()">注册</button>
+        <div class="link">已有账号？<span onclick="showPage('loginPage')">去登录</span></div>
+    </div>
+</div>
+
+<!-- ====================== 用户协议 ====================== -->
+<div class="page" id="agreementPage">
+    <button class="btn" onclick="showPage('loginPage')" style="margin:20px">返回</button>
+    <div class="agreement">
+        <h3 style="text-align:center;margin-bottom:10px">用户协议</h3>
+        <p>1. 本平台仅供娱乐，所有虚拟道具不具备现金价值。</p >
+        <p>2. 严禁使用外挂、作弊工具，违者封号处理。</p >
+        <p>3. 充值虚拟币一旦充值，不支持退款。</p >
+        <p>4. 用户必须遵守国家法律法规及平台规则。</p >
+        <p>5. 最终解释权归本平台所有。</p >
+    </div>
+</div>
+
+<!-- ====================== 首页 ====================== -->
+<div class="page" id="homePage">
+    <div class="top-bar">
+        <div class="avatar" id="avatar">玩</div>
+        <div>
+            <h3 id="home_username">玩家</h3>
+            <p>ID: <span id="home_uid">0</span></p >
+        </div>
+        <div class="currency">
+            <div>🪙<span id="home_coins">0</span></div>
+            <div>💎<span id="home_gems">0</span></div>
+            <div>⭐<span id="home_points">0</span></div>
+        </div>
+    </div>
+
+    <div class="banner">
+        <h3>拉霸厅1</h3>
+        <p>无流量放心玩</p >
+    </div>
+
+    <div class="func-grid">
+        <div onclick="showPage('taskPage')"><div class="icon">🎁</div>任务福利</div>
+        <div onclick="showPage('forumPage')"><div class="icon">✉️</div>交流广场</div>
+        <div onclick="showPage('mailPage')"><div class="icon">💬</div>邮件</div>
+        <div onclick="showPage('servicePage')"><div class="icon">👩‍💼</div>客服</div>
+        <div onclick="showPage('vipPage')"><div class="icon">⭐</div>会员权益</div>
+    </div>
+
+    <div class="game-tab">
+        <span class="active" onclick="switchGame(0)">推币机</span>
+        <span onclick="switchGame(1)">拉霸厅</span>
+        <span onclick="switchGame(2)">街机</span>
+    </div>
+
+    <div class="filter-tab">
+        <span class="active">全部</span>
+        <span>冰淇淋</span>
+        <span>黄金一号</span>
+        <span>魔方</span>
+        <span>魔术师</span>
+    </div>
+
+    <div class="game-list">
+        <div class="game-card" onclick="enterGame()">
+            < img src="https://picsum.photos/300/140">
+            <div class="game-info"><p>黄金一号1-1币</p ><p style="color:#ff40a0">锁机中</p ></div>
+        </div>
+        <div class="game-card" onclick="enterGame()">
+            < img src="https://picsum.photos/301/140">
+            <div class="game-info"><p>黄金一号2-1币</p ><p style="color:#ff40a0">热玩中</p ></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 底部导航 ====================== -->
+<div class="bottom-nav" id="bottomNav">
+    <div class="nav-item active" onclick="showPage('homePage')"><div class="icon">🏠</div>首页</div>
+    <div class="nav-item" onclick="showPage('rankPage')"><div class="icon">📶</div>排行</div>
+    <div class="nav-item" onclick="showPage('exchangePage')"><div class="icon">🔄</div>兑换</div>
+    <div class="nav-item" onclick="showPage('rechargePage')"><div class="icon">¥</div>充值</div>
+    <div class="nav-item" onclick="showPage('profilePage')"><div class="icon">👤</div>我的</div>
+</div>
+
+<script>
+// 切换页面
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    
+    // 登录/注册/协议页隐藏底部导航
+    let nav = document.getElementById('bottomNav');
+    if(id === 'loginPage' || id === 'regPage' || id === 'agreementPage') {
+        nav.style.display = 'none';
+    } else {
+        nav.style.display = 'flex';
+    }
+}
+
+// 切换游戏分类
+function switchGame(n) {
+    document.querySelectorAll('.game-tab span').forEach((s,i)=>{
+        s.classList.toggle('active',i==n)
+    })
+}
+
+// 进入游戏（必须登录）
+function enterGame() {
+    if(!localStorage.getItem('loginUser')){
+        alert('请先登录！');
+        showPage('loginPage');
+        return;
+    }
+    alert('进入游戏成功！');
+}
+
+// 获取下一个可用ID（从1000开始递增）
+function getNextUid() {
+    let maxId = 999;
+    for(let i=0; i<localStorage.length; i++){
+        let key = localStorage.key(i);
+        if(key.startsWith('user_')){
+            let u = JSON.parse(localStorage.getItem(key));
+            if(u.uid > maxId) maxId = u.uid;
+        }
+    }
+    return maxId + 1;
+}
+
+// 注册
+function userReg() {
+    let user = document.getElementById('reg_user').value.trim();
+    let pwd = document.getElementById('reg_pwd').value.trim();
+    let phone = document.getElementById('reg_phone').value.trim();
+    let name = document.getElementById('reg_name').value.trim();
+    let idcard = document.getElementById('reg_idcard').value.trim();
+
+    // 1. 协议校验
+    if(!document.getElementById('reg_agree').checked) {
+        alert('请勾选同意用户协议');
+        return;
+    }
+
+    // 2. 非空校验
+    if(!user || !pwd) {
+        alert('账号和密码不能为空');
+        return;
+    }
+    if(!name) {
+        alert('姓名不能为空');
+        return;
+    }
+    if(!phone) {
+        alert('手机号不能为空');
+        return;
+    }
+    if(!idcard) {
+        alert('身份证号不能为空');
+        return;
+    }
+
+    // 3. 手机号格式校验（11位数字）
+    if(!/^1\d{10}$/.test(phone)) {
+        alert('手机号格式错误，请输入11位有效手机号');
+        return;
+    }
+
+    // 4. 身份证号格式校验（18位）
+    if(!/^\d{17}[\dXx]$/.test(idcard)) {
+        alert('身份证号格式错误，请输入18位有效身份证号');
+        return;
+    }
+
+    // 5. 账号重复校验
+    if(localStorage.getItem('user_'+user)) {
+        alert('账号已存在，请换一个');
+        return;
+    }
+
+    // 6. 自动分配ID（从1000开始递增）
+    let uid = getNextUid();
+
+    // 7. 保存用户数据（金币/钻石/积分默认值）
+    let userData = {
+        user: user,
+        pwd: pwd,
+        name: name,
+        phone: phone,
+        idcard: idcard,
+        coins: 100,
+        gems: 10,
+        points: 50,
+        uid: uid
+    };
+    localStorage.setItem('user_'+user, JSON.stringify(userData));
+
+    alert('注册成功！您的用户ID是：' + uid);
+    showPage('loginPage');
+}
+
+// 登录
+function userLogin() {
+    if(!document.getElementById('agree').checked) {
+        alert('请勾选同意用户协议');
+        return;
+    }
+    let user = document.getElementById('login_user').value.trim();
+    let pwd = document.getElementById('login_pwd').value.trim();
+    let data = localStorage.getItem('user_'+user);
+    if(!data){
+        alert('用户不存在');
+        return;
+    }
+    let u = JSON.parse(data);
+    if(u.pwd !== pwd){
+        alert('密码错误');
+        return;
+    }
+
+    localStorage.setItem('loginUser', user);
+    loadUserInfo();
+    showPage('homePage');
+}
+
+// 加载用户信息（从数据库读取，显示在首页）
+function loadUserInfo() {
+    let loginUser = localStorage.getItem('loginUser');
+    if(!loginUser) return;
+    let u = JSON.parse(localStorage.getItem('user_'+loginUser));
+
+    document.getElementById('avatar').innerText = u.name.substring(0,1);
+    document.getElementById('home_username').innerText = u.user;
+    document.getElementById('home_uid').innerText = u.uid;
+    document.getElementById('home_coins').innerText = u.coins;
+    document.getElementById('home_gems').innerText = u.gems;
+    document.getElementById('home_points').innerText = u.points;
+}
+
+// 退出登录
+function logout() {
+    localStorage.removeItem('loginUser');
+    showPage('loginPage');
+}
+
+// 自动登录
+window.onload = function() {
+    if(localStorage.getItem('loginUser')) {
+        loadUserInfo();
+        showPage('homePage');
+    }
+}
+</script>
+</body>
+</html>
