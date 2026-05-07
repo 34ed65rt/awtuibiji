@@ -2,1021 +2,669 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>爱玩推币机</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>经典扫雷 | 网页版游戏</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei", sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            background-color: #0b122b;
-            color: #fff;
-            padding-bottom: 70px;
-        }
-
-        /* 通用 */
-        .page {
-            display: none;
-            padding: 15px;
-        }
-        .page.active {
-            display: block;
-        }
-        .err-text {
-            color: #ff3333;
-            font-size: 13px;
-            margin: 2px 0 8px 0;
-            display: block;
-        }
-        .back-btn {
-            background: #35f0ff;
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
-
-        /* 登录/注册 */
-        .login-box {
-            max-width: 400px;
-            margin: 60px auto;
-            background: #0f253a;
-            border: 2px solid #35f0ff;
-            border-radius: 16px;
-            padding: 30px;
-        }
-        .login-box h2 {
-            color: #35f0ff;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #0b122b;
-            color: #fff;
-            border: 1px solid #35f0ff;
-            border-radius: 8px;
-        }
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #35f0ff;
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .link {
-            text-align: center;
-            margin-top: 10px;
-            color: #ccc;
-        }
-        .link span {
-            color: #35f0ff;
-            cursor: pointer;
-        }
-        .agree {
+            background: linear-gradient(145deg, #4a5b6e 0%, #2c3e2f 100%);
+            min-height: 100vh;
             display: flex;
+            justify-content: center;
             align-items: center;
-            margin: 10px 0;
-            color: #ccc;
-            gap: 6px;
-        }
-        .agree input {
-            width: auto;
-        }
-        .agree span {
-            color: #35f0ff;
-            cursor: pointer;
+            font-family: 'Segoe UI', 'Courier New', 'Monaco', monospace;
+            margin: 0;
+            padding: 20px;
         }
 
-        /* 底部导航 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #0b122b;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #223;
-        }
-        .nav-item {
-            text-align: center;
-            color: #889;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .nav-item.active {
-            color: #35f0ff;
-        }
-        .nav-item .icon {
-            font-size: 22px;
-            display: block;
+        /* 游戏面板容器 */
+        .game-container {
+            background: #b0b0b0;
+            padding: 24px 20px 20px 20px;
+            border-radius: 24px;
+            box-shadow: 8px 8px 16px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(0,0,0,0.2), inset 2px 2px 4px rgba(255,255,255,0.6);
         }
 
-        /* ========== 首页样式 ========== */
-        .top-bar {
+        /* 控制栏区域 */
+        .control-bar {
+            background: #c0c0c0;
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.7), 2px 2px 5px rgba(0,0,0,0.3);
         }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+
+        /* 计分板和雷数显示器 */
+        .info-panel {
+            background: #000000;
+            color: #f44;
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'Digital-7', 'Courier New', monospace;
+            padding: 4px 12px;
+            border-radius: 10px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 3px red;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -1px -1px 2px rgba(255,255,255,0.2);
         }
-        .avatar {
+
+        .emoji-btn {
+            background: #d4d4d4;
+            font-size: 2.4rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            background: #ffc107;
-            color: #000;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.3), inset -1px -1px 2px rgba(0,0,0,0.2), inset 1px 1px 2px white;
+            transition: 0.05s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #c2c2c2;
+        }
+
+        .emoji-btn:active {
+            transform: scale(0.94);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.4);
+        }
+
+        /* 难度切换区 */
+        .difficulty-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            background: #e0e0e0;
+            border: none;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 6px 16px;
+            border-radius: 28px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3), inset -1px -1px 1px rgba(0,0,0,0.1), inset 1px 1px 2px white;
+            transition: 0.07s;
+        }
+
+        .difficulty-btn.active {
+            background: #9bb7d2;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3);
+            transform: scale(0.97);
+            color: white;
+            text-shadow: 0 1px 1px black;
+        }
+
+        /* 扫雷网格 */
+        .board {
+            display: grid;
+            justify-content: center;
+            background-color: #9e9e9e;
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: inset 2px 2px 6px rgba(0,0,0,0.4), inset -2px -2px 3px rgba(255,255,255,0.5);
+        }
+
+        /* 格子样式 */
+        .cell {
+            width: 34px;
+            height: 34px;
+            background-color: #bdbdbd;
+            border: 1px solid #7e7e7e;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-        }
-        .vip-tag {
-            font-size: 12px;
-            color: #ffc107;
-        }
-        .currency-bar {
-            display: flex;
-            gap: 15px;
-        }
-        .currency-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            border: 1px solid #35f0ff;
-            padding: 5px 10px;
-            border-radius: 8px;
-        }
-        .banner {
-            background: #e8f5e9;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin: 15px 0;
-            color: #000;
-        }
-        .func-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        .func-item {
-            font-size: 12px;
-            color: #ff69b4;
+            font-size: 1.2rem;
             cursor: pointer;
-        }
-        .func-item .icon {
-            font-size: 28px;
-            color: #ff69b4;
-            margin-bottom: 5px;
-        }
-        .game-tab {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-        }
-        .game-tab span {
-            color: #ff69b4;
-            cursor: pointer;
-        }
-        .game-tab span.active {
-            color: #35f0ff;
-            border-bottom: 2px solid #35f0ff;
-        }
-        .filter-tab {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            overflow-x: auto;
-        }
-        .filter-tab span {
-            padding: 8px 20px;
-            border-radius: 20px;
-            background: #1a2a3a;
-            color: #ff69b4;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .filter-tab span.active {
-            background: #35f0ff;
-            color: #000;
-        }
-        .game-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .game-card {
-            background: #1a2a3a;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .game-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-        .game-info {
-            padding: 10px;
-        }
-        .game-status {
-            color: #ff40a0;
-            text-align: right;
+            box-shadow: inset -1px -1px 0px #404040, inset 1px 1px 0px #f0f0f0;
+            transition: 0.02s linear;
+            font-family: monospace;
         }
 
-        /* ========== 排行页面样式 ========== */
-        .rank-header {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-        .rank-header span {
-            color: #ff69b4;
-            cursor: pointer;
-        }
-        .rank-header span.active {
-            color: #35f0ff;
-            border-bottom: 2px solid #35f0ff;
-        }
-        .my-rank-box {
-            background: #1a2a3a;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .top3-list {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .top3-item {
-            text-align: center;
-        }
-        .top3-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #333;
-            margin: 0 auto 5px;
-        }
-        .top3-name {
-            font-size: 14px;
-        }
-        .top3-score {
-            font-size: 12px;
-            color: #35f0ff;
-        }
-        .rank-table {
-            background: #1a2a3a;
-            border-radius: 12px;
-            padding: 10px;
-        }
-        .rank-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #223;
-        }
-
-        /* ========== 兑换页面样式 ========== */
-        .exchange-header {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-        .exchange-header span {
-            color: #ff69b4;
-            cursor: pointer;
-        }
-        .exchange-header span.active {
-            color: #35f0ff;
-            border-bottom: 2px solid #35f0ff;
-        }
-        .exchange-box {
-            background: #1a2a3a;
-            border: 2px solid #35f0ff;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .exchange-ratio {
-            background: #222;
-            color: #ffc107;
-            padding: 8px;
-            border-radius: 12px;
-            margin: 10px 0;
-        }
-        .input-group {
-            display: flex;
-            align-items: center;
-            border: 1px solid #35f0ff;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        .input-group span {
-            padding: 0 15px;
-            color: #35f0ff;
-        }
-        .input-group input {
-            flex: 1;
-            background: transparent;
+        /* 已翻开格子风格 */
+        .cell.revealed {
+            background-color: #d0d0d0;
+            box-shadow: inset 0 0 0 1px #a0a0a0;
             border: none;
-            color: #fff;
-            padding: 12px;
-            outline: none;
-        }
-        .exchange-record {
-            background: #1a2a3a;
-            border-radius: 12px;
-            padding: 15px;
-        }
-        .record-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #223;
-        }
-        .record-text {
-            color: #35f0ff;
-        }
-        .record-time {
-            color: #ff69b4;
-            font-size: 12px;
-        }
-        .record-points {
-            color: #ffc107;
-            text-align: right;
+            cursor: default;
         }
 
-        /* ========== 充值页面样式 ========== */
-        .recharge-header {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
+        /* 标记旗子样式 */
+        .cell.flagged::before {
+            content: "🚩";
+            font-size: 1.2rem;
+            line-height: 1;
         }
-        .recharge-header span {
-            color: #ff69b4;
-            cursor: pointer;
+
+        .cell.flagged {
+            font-size: 0;
         }
-        .recharge-header span.active {
-            color: #35f0ff;
-            border-bottom: 2px solid #35f0ff;
+
+        /* 数字颜色 */
+        .cell[data-value="1"] { color: #0100fe; }
+        .cell[data-value="2"] { color: #017e00; }
+        .cell[data-value="3"] { color: #fe0000; }
+        .cell[data-value="4"] { color: #010081; }
+        .cell[data-value="5"] { color: #810101; }
+        .cell[data-value="6"] { color: #00817e; }
+        .cell[data-value="7"] { color: #000000; }
+        .cell[data-value="8"] { color: #7e7e7e; }
+
+        /* 炸弹爆炸效果 */
+        .cell.mine-blast {
+            background-color: #f77;
+            color: black;
         }
-        .package-section {
-            margin-bottom: 20px;
-        }
-        .package-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-        .package-card {
-            background: #1a2a3a;
-            border-radius: 12px;
-            overflow: hidden;
+
+        /* 游戏结束/胜利遮罩 (消息层) */
+        .game-message {
             text-align: center;
-        }
-        .package-top {
-            padding: 15px;
-        }
-        .package-bottom {
-            background: #35f0ff;
-            color: #000;
-            padding: 8px;
+            margin-top: 14px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            background: #e8cf9a;
+            padding: 5px;
+            border-radius: 40px;
+            color: #3d2a1a;
         }
 
-        /* ========== 我的页面样式 ========== */
-        .my-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.75rem;
+            color: #ececec;
+            text-shadow: 1px 1px 0 #1e2a1f;
         }
-        .progress-bar {
-            flex: 1;
-            height: 5px;
-            background: #222;
-            border-radius: 5px;
-        }
-        .progress-fill {
-            width: 50%;
-            height: 100%;
-            background: #35f0ff;
-            border-radius: 5px;
-        }
-        .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            background: #1a2a3a;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .my-func-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .my-func-item {
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .my-menu-list {
-            background: #1a2a3a;
-            border-radius: 12px;
-            padding: 10px;
-        }
-        .my-menu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #223;
+
+        @media (max-width: 550px) {
+            .cell {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+            .info-panel {
+                font-size: 1.4rem;
+                padding: 2px 10px;
+            }
+            .emoji-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
-
-<!-- ====================== 登录页 ====================== -->
-<div class="page active" id="loginPage">
-    <div class="login-box">
-        <h2>登录</h2>
-        <input id="login_user" placeholder="输入账号">
-        <span class="err-text" id="loginErr"></span>
-        <input id="login_pwd" placeholder="输入密码" type="password">
-
-        <div class="agree">
-            <input type="checkbox" id="agree">
-            <label>我已同意</label>
-            <span onclick="showPage('agreementPage')">《用户协议》</span>
+<div>
+    <div class="game-container">
+        <div class="control-bar">
+            <div class="info-panel" id="mineCounter">000</div>
+            <button class="emoji-btn" id="resetButton">😊</button>
+            <div class="info-panel" id="flagCounter">000</div>
         </div>
-        <span class="err-text" id="agreeErr"></span>
 
-        <button class="btn" onclick="userLogin()">登录</button>
-        <div class="link">没有账号？<span onclick="showPage('regPage')">去注册</span></div>
-    </div>
-</div>
-
-<!-- ====================== 注册页 ====================== -->
-<div class="page" id="regPage">
-    <div class="login-box">
-        <h2>注册</h2>
-        <input id="reg_user" placeholder="账号">
-        <span class="err-text" id="userErr"></span>
-
-        <input id="reg_pwd" placeholder="密码">
-        <span class="err-text" id="pwdErr"></span>
-
-        <input id="reg_name" placeholder="姓名">
-        <span class="err-text" id="nameErr"></span>
-
-        <input id="reg_phone" placeholder="手机号">
-        <span class="err-text" id="phoneErr"></span>
-
-        <input id="reg_idcard" placeholder="身份证号">
-        <span class="err-text" id="idcardErr"></span>
-
-        <div class="agree">
-            <input type="checkbox" id="reg_agree">
-            <label>我已同意</label>
-            <span onclick="showPage('agreementPage')">《用户协议》</span>
+        <div class="difficulty-row">
+            <button data-diff="easy" class="difficulty-btn active">🍃 简单 9x9</button>
+            <button data-diff="medium" class="difficulty-btn">⚡ 中等 16x16</button>
+            <button data-diff="hard" class="difficulty-btn">🔥 困难 16x30</button>
         </div>
-        <span class="err-text" id="regAgreeErr"></span>
 
-        <button class="btn" onclick="userReg()">注册</button>
-        <div class="link">已有账号？<span onclick="showPage('loginPage')">去登录</span></div>
+        <div id="boardContainer" class="board"></div>
+        <div id="gameStatusMsg" class="game-message">✨ 点击格子开始 ✨</div>
     </div>
-</div>
-
-<!-- ====================== 用户协议 ====================== -->
-<div class="page" id="agreementPage">
-    <button class="back-btn" onclick="showPage('loginPage')">返回</button>
-    <div class="login-box" style="max-width: unset; margin: 20px;">
-        <h3 style="text-align:center;margin-bottom:10px">用户协议</h3>
-        <p style="line-height: 1.8;">1. 本平台仅供娱乐，所有虚拟道具不具备现金价值。</p>
-        <p style="line-height: 1.8;">2. 严禁使用外挂、作弊工具，违者封号处理。</p>
-        <p style="line-height: 1.8;">3. 充值虚拟币一旦充值，不支持退款。</p>
-        <p style="line-height: 1.8;">4. 用户必须遵守国家法律法规及平台规则。</p>
-        <p style="line-height: 1.8;">5. 最终解释权归本平台所有。</p>
-    </div>
-</div>
-
-<!-- ====================== 首页 ====================== -->
-<div class="page" id="homePage">
-    <div class="top-bar">
-        <div class="user-info">
-            <div class="avatar" id="avatar">玩</div>
-            <div>
-                <h3 id="home_username">爱玩推币机</h3>
-                <p class="vip-tag">VIP0</p>
-            </div>
-        </div>
-        <div class="currency-bar">
-            <div class="currency-item">
-                <span style="font-size:20px">🪙</span>
-                <span id="home_coins">1</span>
-                <span style="color:#35f0ff">+</span>
-            </div>
-            <div class="currency-item">
-                <span style="font-size:20px">💎</span>
-                <span id="home_gems">0</span>
-                <span style="color:#35f0ff">+</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="banner">
-        <h3>拉霸厅1</h3>
-        <p>无流量放心玩</p>
-    </div>
-
-    <div class="func-grid">
-        <div class="func-item"><div class="icon">🎁</div>任务福利</div>
-        <div class="func-item"><div class="icon">✉️</div>交流广场</div>
-        <div class="func-item"><div class="icon">💬</div>邮件</div>
-        <div class="func-item"><div class="icon">👩‍💼</div>在线客服</div>
-        <div class="func-item"><div class="icon">⭐</div>会员权益</div>
-    </div>
-
-    <div class="game-tab">
-        <span class="active" onclick="switchGame(0)">推币机</span>
-        <span onclick="switchGame(1)">拉霸厅</span>
-        <span onclick="switchGame(2)">街机</span>
-    </div>
-
-    <div class="filter-tab">
-        <span class="active">全部</span>
-        <span>冰淇淋</span>
-        <span>黄金一号</span>
-        <span>魔方</span>
-        <span>魔术师</span>
-    </div>
-
-    <div class="game-list">
-        <div class="game-card" onclick="enterGame()">
-            <img src="https://picsum.photos/300/140">
-            <div class="game-info">
-                <p>黄金一号1-1币</p>
-                <p class="game-status">锁机中</p>
-            </div>
-        </div>
-        <div class="game-card" onclick="enterGame()">
-            <img src="https://picsum.photos/301/140">
-            <div class="game-info">
-                <p>黄金一号2-1币</p>
-                <p class="game-status">热玩中</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ====================== 排行 ====================== -->
-<div class="page" id="rankPage">
-    <div class="rank-header">
-        <span class="active">积分榜</span>
-        <span>充值榜</span>
-    </div>
-
-    <div class="my-rank-box">
-        <div class="user-info">
-            <div class="avatar" style="width:40px;height:40px">玩</div>
-            <div>
-                <h3>爱玩推币机</h3>
-                <p>0积分</p>
-            </div>
-        </div>
-        <div>
-            <p style="color:#35f0ff">未上榜</p>
-            <p style="color:#ff69b4">当前排行</p>
-        </div>
-    </div>
-
-    <div class="top3-list">
-        <div class="top3-item">
-            <div class="top3-avatar" style="background:#ccc">🐰</div>
-            <p>TOP 2</p>
-            <p>导***鼠</p>
-            <p class="top3-score">积分: 984880</p>
-        </div>
-        <div class="top3-item">
-            <div class="top3-avatar" style="background:#ffc107">👑</div>
-            <p>TOP 1</p>
-            <p>梁***梁</p>
-            <p class="top3-score">积分: 1288560</p>
-        </div>
-        <div class="top3-item">
-            <div class="top3-avatar" style="background:#ccc">🐱</div>
-            <p>TOP 3</p>
-            <p>金***币</p>
-            <p class="top3-score">积分: 914161</p>
-        </div>
-    </div>
-
-    <div class="rank-table">
-        <div class="rank-item">
-            <span>4</span>
-            <div class="user-info">
-                <div class="avatar" style="width:30px;height:30px">🎰</div>
-                <span>推***进</span>
-            </div>
-            <span>554320分</span>
-            <span>0币</span>
-        </div>
-    </div>
-</div>
-
-<!-- ====================== 兑换 ====================== -->
-<div class="page" id="exchangePage">
-    <div class="exchange-header">
-        <span class="active">积分兑换</span>
-        <span>CDK兑换</span>
-    </div>
-
-    <div class="exchange-box">
-        <p>我的积分</p>
-        <p style="font-size:30px">⭐ <span id="my_points">8</span></p>
-        <div class="exchange-ratio">当前为VIP0，兑换比例11:1，可兑换金0币</div>
-        <div class="input-group">
-            <span>兑换 全部兑换</span>
-            <input placeholder="请输入金币">
-        </div>
-        <button class="btn" style="background: linear-gradient(180deg, #35f0ff, #1a8cff); color:#000">立即兑换</button>
-    </div>
-
-    <div class="exchange-record">
-        <p style="color:#35f0ff;margin-bottom:10px">兑换明细</p>
-        <div class="record-item">
-            <p class="record-text">兑换141金币</p>
-            <p class="record-time">2026-04-26 14:06:51</p>
-            <p class="record-points">-1551积分</p>
-        </div>
-    </div>
-</div>
-
-<!-- ====================== 充值 ====================== -->
-<div class="page" id="rechargePage">
-    <div class="top-bar">
-        <div class="user-info">
-            <div class="avatar" style="width:40px;height:40px">玩</div>
-            <div>
-                <h3>爱玩推币机</h3>
-                <p class="vip-tag">VIP0</p>
-            </div>
-        </div>
-        <div class="currency-bar">
-            <div class="currency-item">
-                <span style="font-size:20px">🪙</span>
-                <span id="recharge_coins">1</span>
-                <span style="color:#35f0ff">+</span>
-            </div>
-            <div class="currency-item">
-                <span style="font-size:20px">💎</span>
-                <span id="recharge_gems">0</span>
-                <span style="color:#35f0ff">+</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="recharge-header">
-        <span class="active">金币</span>
-        <span>周卡/月卡</span>
-        <span>钻石</span>
-    </div>
-
-    <div class="package-section">
-        <p style="color:#ff69b4;margin-bottom:10px">活动特惠包</p>
-        <div class="package-grid">
-            <div class="package-card">
-                <div class="package-top">
-                    <p>优惠1</p>
-                    <p>🪙 ×1088</p>
-                </div>
-                <div class="package-bottom">¥38.00</div>
-            </div>
-            <div class="package-card">
-                <div class="package-top">
-                    <p>优惠2</p>
-                    <p>🪙 ×2888</p>
-                </div>
-                <div class="package-bottom">¥100.00</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ====================== 我的 ====================== -->
-<div class="page" id="profilePage">
-    <div class="my-header">
-        <div class="avatar" style="width:60px;height:60px">玩</div>
-        <div>
-            <h3>爱玩推币机</h3>
-            <p>ID: 1314</p>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            <p style="color:#ff69b4">再充值20元升级</p>
-        </div>
-    </div>
-
-    <div class="stats-bar">
-        <div>
-            <p style="color:#35f0ff">8</p>
-            <p style="color:#ff69b4">积分</p>
-        </div>
-        <div>
-            <p style="color:#35f0ff">0</p>
-            <p style="color:#ff69b4">钻石</p>
-        </div>
-        <div>
-            <p style="color:#35f0ff">1</p>
-            <p style="color:#ff69b4">金币</p>
-        </div>
-    </div>
-
-    <div class="my-func-grid">
-        <div class="my-func-item" style="background:#ffc107;color:#000">
-            <div>
-                <p>会员权益</p>
-            </div>
-            <span style="font-size:30px">🏆</span>
-        </div>
-        <div class="my-func-item" style="background:#1a8cff;color:#fff">
-            <div>
-                <p>任务福利</p>
-            </div>
-            <span style="font-size:30px">🎁</span>
-        </div>
-    </div>
-
-    <div class="my-menu-list">
-        <div class="my-menu-item">
-            <div style="display:flex;align-items:center;gap:10px">
-                <span style="color:#35f0ff">ℹ️</span>
-                <span>游戏说明</span>
-            </div>
-            <span style="color:#35f0ff">></span>
-        </div>
-        <div class="my-menu-item">
-            <div style="display:flex;align-items:center;gap:10px">
-                <span style="color:#35f0ff">💳</span>
-                <span>我的账单</span>
-            </div>
-            <span style="color:#35f0ff">></span>
-        </div>
-    </div>
-</div>
-
-<!-- ====================== 底部导航 ====================== -->
-<div class="bottom-nav" id="bottomNav">
-    <div class="nav-item active" onclick="showPage('homePage')">
-        <div class="icon">🏠</div>
-        <span>首页</span>
-    </div>
-    <div class="nav-item" onclick="showPage('rankPage')">
-        <div class="icon">📊</div>
-        <span>排行</span>
-    </div>
-    <div class="nav-item" onclick="showPage('exchangePage')">
-        <div class="icon">🔄</div>
-        <span>兑换</span>
-    </div>
-    <div class="nav-item" onclick="showPage('rechargePage')">
-        <div class="icon">¥</div>
-        <span>充值</span>
-    </div>
-    <div class="nav-item" onclick="showPage('profilePage')">
-        <div class="icon">👤</div>
-        <span>我的</span>
-    </div>
+    <footer>🖱️ 左键开格 · 右键/长按标记🚩 | 再按旗子取消</footer>
 </div>
 
 <script>
-// 清空所有错误提示
-function clearAllErr(){
-    document.querySelectorAll('.err-text').forEach(el=>el.innerText="");
-}
+    // ---------- 扫雷核心逻辑 ----------
+    let currentDifficulty = 'easy';    // 'easy', 'medium', 'hard'
+    let rows = 9, cols = 9, totalMines = 10;
 
-// 切换页面
-function showPage(id) {
-    clearAllErr();
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    // 游戏状态
+    let board = [];          // 存储每个格子对象: { isMine, revealed, flagged, neighborMines }
+    let gameActive = true;   // false表示游戏结束 (输或赢)
+    let winFlag = false;     // 是否胜利（用于避免胜利后再触发事件）
+    let firstMove = true;    // 是否第一次点击未翻开任何格子 (用于防止首点踩雷 + 布雷)
 
-    // 登录/注册/协议页隐藏底部导航
-    let nav = document.getElementById('bottomNav');
-    if(id === 'loginPage' || id === 'regPage' || id === 'agreementPage') {
-        nav.style.display = 'none';
-    } else {
-        nav.style.display = 'flex';
-    }
+    // DOM 元素
+    const boardContainer = document.getElementById('boardContainer');
+    const mineCounterSpan = document.getElementById('mineCounter');
+    const flagCounterSpan = document.getElementById('flagCounter');
+    const resetBtn = document.getElementById('resetButton');
+    const gameStatusDiv = document.getElementById('gameStatusMsg');
+    const diffBtns = document.querySelectorAll('.difficulty-btn');
 
-    // 更新底部导航选中状态
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const pageMap = {
-        'homePage': 0,
-        'rankPage': 1,
-        'exchangePage': 2,
-        'rechargePage': 3,
-        'profilePage': 4
-    };
-    if(pageMap.hasOwnProperty(id)) {
-        document.querySelectorAll('.nav-item')[pageMap[id]].classList.add('active');
-    }
-}
-
-// 切换游戏分类
-function switchGame(n) {
-    document.querySelectorAll('.game-tab span').forEach((s,i)=>{
-        s.classList.toggle('active',i==n)
-    })
-}
-
-// 进入游戏（必须登录）
-function enterGame() {
-    if(!localStorage.getItem('loginUser')){
-        showPage('loginPage');
-        return;
-    }
-    alert('进入游戏成功！');
-}
-
-// 获取下一个可用ID（从1000开始递增）
-function getNextUid() {
-    let maxId = 999;
-    for(let i=0; i<localStorage.length; i++){
-        let key = localStorage.key(i);
-        if(key.startsWith('user_')){
-            let u = JSON.parse(localStorage.getItem(key));
-            if(u.uid > maxId) maxId = u.uid;
+    // 辅助函数: 根据难度更新参数
+    function updateDifficultyParams() {
+        if (currentDifficulty === 'easy') {
+            rows = 9; cols = 9; totalMines = 10;
+        } else if (currentDifficulty === 'medium') {
+            rows = 16; cols = 16; totalMines = 40;
+        } else if (currentDifficulty === 'hard') {
+            rows = 16; cols = 30; totalMines = 99;
         }
     }
-    return maxId + 1;
-}
 
-// 注册
-function userReg() {
-    let user = document.getElementById('reg_user').value.trim();
-    let pwd = document.getElementById('reg_pwd').value.trim();
-    let phone = document.getElementById('reg_phone').value.trim();
-    let name = document.getElementById('reg_name').value.trim();
-    let idcard = document.getElementById('reg_idcard').value.trim();
-
-    // 1. 协议校验
-    if(!document.getElementById('reg_agree').checked) {
-        document.getElementById('regAgreeErr').innerText = '请阅读并同意用户协议';
-        return;
+    // 格式化显示数字 (3位)
+    function formatCounter(num) {
+        if (num < 0) num = 0;
+        if (num > 999) return '999';
+        return num.toString().padStart(3, '0');
     }
 
-    // 2. 非空校验
-    if(!user) {
-        document.getElementById('userErr').innerText = '账号不能为空';
-        return;
-    }
-    if(localStorage.getItem('user_'+user)) {
-        document.getElementById('userErr').innerText = '账号已存在，请更换';
-        return;
-    }
-    if(!pwd) {
-        document.getElementById('pwdErr').innerText = '密码不能为空';
-        return;
-    }
-    if(!name) {
-        document.getElementById('nameErr').innerText = '姓名不能为空';
-        return;
-    }
-    if(!phone) {
-        document.getElementById('phoneErr').innerText = '手机号不能为空';
-        return;
-    }
-    if(!idcard) {
-        document.getElementById('idcardErr').innerText = '身份证号不能为空';
-        return;
+    // 更新界面上的雷数指示器 (剩余未标记雷数参考显示: 剩余雷数 = totalMines - 已放置旗子数)
+    function updateCounters() {
+        let flaggedCount = 0;
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                if (board[i][j].flagged) flaggedCount++;
+            }
+        }
+        let remainingMines = totalMines - flaggedCount;
+        mineCounterSpan.innerText = formatCounter(remainingMines);
+        flagCounterSpan.innerText = formatCounter(flaggedCount);
     }
 
-    // 3. 格式校验
-    if(!/^1\d{10}$/.test(phone)) {
-        document.getElementById('phoneErr').innerText = '手机号格式错误';
-        return;
-    }
-    if(!/^\d{17}[\dXx]$/.test(idcard)) {
-        document.getElementById('idcardErr').innerText = '身份证号格式错误';
-        return;
+    // 重新初始化空白板 (不布雷, 仅数据结构)
+    function initEmptyBoard() {
+        const newBoard = [];
+        for (let i = 0; i < rows; i++) {
+            newBoard[i] = [];
+            for (let j = 0; j < cols; j++) {
+                newBoard[i][j] = {
+                    isMine: false,
+                    revealed: false,
+                    flagged: false,
+                    neighborMines: 0
+                };
+            }
+        }
+        return newBoard;
     }
 
-    // 4. 保存用户数据
-    let uid = getNextUid();
-    let userData = {
-        user: user,
-        pwd: pwd,
-        name: name,
-        phone: phone,
-        idcard: idcard,
-        coins: 100,
-        gems: 10,
-        points: 50,
-        uid: uid
+    // 计算每个非雷格子周围的雷数 (全盘)
+    function computeNeighbors(boardData) {
+        const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                if (boardData[i][j].isMine) {
+                    boardData[i][j].neighborMines = -1;
+                    continue;
+                }
+                let cnt = 0;
+                for (let d of dirs) {
+                    const ni = i + d[0], nj = j + d[1];
+                    if (ni >= 0 && ni < rows && nj >= 0 && nj < cols && boardData[ni][nj].isMine) cnt++;
+                }
+                boardData[i][j].neighborMines = cnt;
+            }
+        }
+    }
+
+    // 布雷: 保证第一次点击的格子 (firstRow, firstCol) 不是雷, 并且避开该格子周围? 经典扫雷首格安全即可，无需复杂, 但要保证不踩雷
+    function placeMines(firstRow, firstCol) {
+        // 全新板子全清空
+        const newBoard = initEmptyBoard();
+        let minesPlaced = 0;
+        // 为了避免重复且首格无雷
+        while (minesPlaced < totalMines) {
+            const randRow = Math.floor(Math.random() * rows);
+            const randCol = Math.floor(Math.random() * cols);
+            // 不是首格位置且当前格无雷
+            if (!(randRow === firstRow && randCol === firstCol) && !newBoard[randRow][randCol].isMine) {
+                newBoard[randRow][randCol].isMine = true;
+                minesPlaced++;
+            }
+        }
+        computeNeighbors(newBoard);
+        return newBoard;
+    }
+
+    // 递归展开空白区域 ( Flood Fill )
+    function revealEmptyArea(row, col, visitedSet = null) {
+        if (!gameActive) return;
+        const cell = board[row][col];
+        if (cell.revealed || cell.flagged) return;
+
+        // 避免递归过深用set去重控制 (但其实逻辑里已经判断revealed)
+        cell.revealed = true;
+        if (cell.neighborMines === 0 && !cell.isMine) {
+            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            for (let d of dirs) {
+                const ni = row + d[0], nj = col + d[1];
+                if (ni >= 0 && ni < rows && nj >= 0 && nj < cols && !board[ni][nj].revealed && !board[ni][nj].flagged && !board[ni][nj].isMine) {
+                    revealEmptyArea(ni, nj);
+                }
+            }
+        }
+    }
+
+    // 翻开格子 (主要逻辑)
+    function revealCell(row, col) {
+        if (!gameActive) return false;
+        const cell = board[row][col];
+        if (cell.revealed) return false;
+        if (cell.flagged) {
+            gameStatusDiv.innerText = '🚫 请取消旗子后再点击 🚫';
+            setTimeout(() => { if(gameActive) gameStatusDiv.innerText = '游戏进行中'; }, 700);
+            return false;
+        }
+
+        if (cell.isMine) {
+            // 踩雷 Game Over
+            cell.revealed = true;
+            cell.flagged = false;
+            gameActive = false;
+            winFlag = false;
+            gameStatusDiv.innerText = '💣 踩到地雷！游戏结束 💣';
+            // 显示所有地雷
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (board[i][j].isMine) {
+                        board[i][j].revealed = true;
+                        board[i][j].flagged = false;
+                    }
+                }
+            }
+            // 标记当前爆炸的格子特殊样式
+            renderBoard();
+            const blastCellDiv = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+            if (blastCellDiv) blastCellDiv.classList.add('mine-blast');
+            document.getElementById('resetButton').innerHTML = '💀';
+            return false;
+        }
+
+        // 安全格子: 翻开
+        if (cell.neighborMines === 0) {
+            revealEmptyArea(row, col);
+        } else {
+            cell.revealed = true;
+        }
+        renderBoard();
+
+        // 胜利判定: 所有非雷格子均已翻开
+        let allSafeRevealed = true;
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                if (!board[i][j].isMine && !board[i][j].revealed) {
+                    allSafeRevealed = false;
+                    break;
+                }
+            }
+        }
+        if (allSafeRevealed && gameActive) {
+            gameActive = false;
+            winFlag = true;
+            gameStatusDiv.innerText = '🎉 胜利！ 完美排雷 🎉';
+            document.getElementById('resetButton').innerHTML = '😎';
+            renderBoard(); // 重新渲染，不再响应点击
+            return true;
+        }
+        return true;
+    }
+
+    // 标记旗子 / 取消旗子 (右键)
+    function toggleFlag(row, col, isRightClick = true) {
+        if (!gameActive) return false;
+        const cell = board[row][col];
+        if (cell.revealed) return false; // 已翻开不能标记
+        if (!cell.flagged) {
+            // 标记旗子
+            cell.flagged = true;
+        } else {
+            cell.flagged = false;
+        }
+        renderBoard();
+        updateCounters();
+        // 额外胜利判定：旗子标记正确并覆盖所有雷可以胜利但更符合直觉只要所有非雷翻开即胜利，但如果玩家旗子标记完所有雷且剩余未开格子全是雷自动胜利判定?
+        // 经典扫雷胜利条件是所有非雷格子翻开，所以不需要额外校验，我们已经有翻开判定胜利，但为了友好稍加自动胜利(可选):
+        // 另外检测: 所有地雷都被旗子标记且所有非雷已翻开 -> 但前面翻开判定已经涵盖，不需重复。
+        // 但是如果有玩家全旗子标记所有雷但没有完全翻开非雷依然不会胜利，这个合理。
+        return true;
+    }
+
+    // 渲染网格
+    function renderBoard() {
+        boardContainer.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+        boardContainer.innerHTML = '';
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                const cell = board[i][j];
+                const cellDiv = document.createElement('div');
+                cellDiv.className = 'cell';
+                if (cell.revealed) cellDiv.classList.add('revealed');
+                if (cell.flagged && !cell.revealed) cellDiv.classList.add('flagged');
+                // 添加自定义属性标记坐标
+                cellDiv.setAttribute('data-row', i);
+                cellDiv.setAttribute('data-col', j);
+
+                // 显示内容
+                if (cell.revealed) {
+                    if (cell.isMine) {
+                        cellDiv.innerText = '💣';
+                        cellDiv.style.fontSize = '1.2rem';
+                    } else {
+                        const neighborVal = cell.neighborMines;
+                        if (neighborVal > 0) {
+                            cellDiv.innerText = neighborVal;
+                            cellDiv.setAttribute('data-value', neighborVal);
+                        } else {
+                            cellDiv.innerText = '';
+                        }
+                    }
+                } else {
+                    // 未翻开状态，旗子通过伪类显示，内容为空
+                    if (!cell.flagged) cellDiv.innerText = '';
+                    else cellDiv.innerText = ''; // 伪类显示旗子
+                }
+
+                // 添加事件监听 (统一在渲染时绑定替换, 避免内存问题但直接绑定新dom)
+                cellDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!gameActive) return;
+                    if (cell.revealed) return;
+                    if (cell.flagged) return;
+                    revealCell(i, j);
+                    updateCounters();
+                    // 游戏结束时重置按钮表情改变
+                    if (!gameActive && !winFlag) document.getElementById('resetButton').innerHTML = '😵';
+                    else if (winFlag) document.getElementById('resetButton').innerHTML = '🏆';
+                });
+
+                cellDiv.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    if (!gameActive) return false;
+                    if (cell.revealed) return false;
+                    toggleFlag(i, j, true);
+                    updateCounters();
+                    return false;
+                });
+
+                // 移动端长按辅助: 简单的 touch 模拟右键
+                let touchTimer = null;
+                cellDiv.addEventListener('touchstart', (e) => {
+                    if (!gameActive) return;
+                    if (cell.revealed) return;
+                    touchTimer = setTimeout(() => {
+                        e.preventDefault();
+                        toggleFlag(i, j, true);
+                        updateCounters();
+                        touchTimer = null;
+                    }, 500);
+                });
+                cellDiv.addEventListener('touchend', (e) => {
+                    if (touchTimer) {
+                        clearTimeout(touchTimer);
+                        touchTimer = null;
+                        // 如果没有长按触发的flag，且游戏活跃且格子未翻开未旗子，执行左键点击逻辑
+                        if (gameActive && !cell.revealed && !cell.flagged) {
+                            revealCell(i, j);
+                            updateCounters();
+                            if (!gameActive && !winFlag) document.getElementById('resetButton').innerHTML = '😵';
+                            else if (winFlag) document.getElementById('resetButton').innerHTML = '🏆';
+                        }
+                    }
+                });
+                cellDiv.addEventListener('touchcancel', () => {
+                    if (touchTimer) clearTimeout(touchTimer);
+                });
+
+                boardContainer.appendChild(cellDiv);
+            }
+        }
+        // 更新计数器
+        updateCounters();
+    }
+
+    // 启动新游戏 (重置全部)
+    function newGame(clickRow = -1, clickCol = -1, isFirstMoveSync = false) {
+        gameActive = true;
+        winFlag = false;
+        firstMove = true;
+        document.getElementById('resetButton').innerHTML = '😊';
+        // 重置时需要用临时初始板子并依据首次点击布雷（但newGame调用通常是重置按钮或改难度且还没有点击事件）
+        // 为了行为统一，我们创建一个空板，但是实际布雷需要延迟到第一次点击
+        // 简单做法：初始准备一个无雷空板，firstMove标志为true，待第一次点击调用 placeMinesOnFirstClick
+        board = initEmptyBoard();
+        computeNeighbors(board); // 全0邻接
+        renderBoard();
+        updateCounters();
+        gameStatusDiv.innerText = '✨ 点击格子，首格安全 ✨';
+        // 如果重置时传入了指定点击 (但通常没有)
+        firstMove = true;
+    }
+
+    // 真正第一次点击时进行布雷并重新执行翻开操作
+    function firstClickReveal(row, col) {
+        // 根据点击位置布雷
+        const newBoard = placeMines(row, col);
+        board = newBoard;
+        // 布雷后执行翻开该格子
+        gameActive = true;
+        winFlag = false;
+        firstMove = false;
+        // 清除旗子标记残留 (新版板没有旗子)
+        renderBoard();
+        // 递归翻开当前无雷格子
+        const cell = board[row][col];
+        if (!cell.isMine) {
+            if (cell.neighborMines === 0) {
+                revealEmptyArea(row, col);
+            } else {
+                cell.revealed = true;
+            }
+        } else {
+            // 理论上placeMines已经保证首格无雷，不会进入这里
+            cell.revealed = true;
+            gameActive = false;
+            gameStatusDiv.innerText = '💣 程序异常? 重新开始';
+        }
+        renderBoard();
+        updateCounters();
+        // 胜利判定在reveal中已有，但调用reveal可能已触发 
+        let allSafe = true;
+        for (let i=0;i<rows;i++) {
+            for(let j=0;j<cols;j++) {
+                if(!board[i][j].isMine && !board[i][j].revealed) allSafe=false;
+            }
+        }
+        if(allSafe && gameActive) {
+            gameActive=false;
+            winFlag=true;
+            gameStatusDiv.innerText='🎉 胜利！ 完美排雷 🎉';
+            document.getElementById('resetButton').innerHTML='😎';
+            renderBoard();
+        }
+    }
+
+    // 封装重置并且让首格逻辑有效
+    function resetAndNewGame() {
+        board = initEmptyBoard();
+        computeNeighbors(board);
+        gameActive = true;
+        winFlag = false;
+        firstMove = true;
+        renderBoard();
+        updateCounters();
+        gameStatusDiv.innerText = '✨ 点击格子，首格安全 ✨';
+        document.getElementById('resetButton').innerHTML = '😊';
+        // 覆盖掉全局board的事件外，renderBoard绑定新的点击行为，点击时候会调用统一入口
+    }
+
+    // 重写原有的点击拦截 —— 由于renderBoard动态绑定了事件，但需要处理首次布阵。我们需要在revealCell内部检查firstMove全局
+    // 为了保留原函数整洁，保留原有revealCell，但修改revealCell开头加入首格处理:
+    const originalRevealCell = revealCell;
+    window.revealCell = function(row, col) {
+        if (!gameActive) return false;
+        if (firstMove === true) {
+            // 首次点击处理布雷逻辑
+            firstClickReveal(row, col);
+            return true;
+        } else {
+            return originalRevealCell(row, col);
+        }
     };
-    localStorage.setItem('user_'+user, JSON.stringify(userData));
+    // 替换全局调用
+    window.revealCellBind = window.revealCell;
+    // 重新定义 revealCell 函数
+    revealCell = function(row, col) {
+        if (!gameActive) return false;
+        if (firstMove === true) {
+            firstClickReveal(row, col);
+            return true;
+        } else {
+            return originalRevealCell(row, col);
+        }
+    };
 
-    alert('注册成功！您的用户ID是：' + uid);
-    showPage('loginPage');
-}
-
-// 登录
-function userLogin() {
-    clearAllErr();
-    let user = document.getElementById('login_user').value.trim();
-    let pwd = document.getElementById('login_pwd').value.trim();
-    let agree = document.getElementById('agree').checked;
-
-    if(!agree) {
-        document.getElementById('agreeErr').innerText = '请阅读并同意用户协议';
-        return;
-    }
-    if(!user) {
-        document.getElementById('loginErr').innerText = '账号不能为空';
-        return;
-    }
-    if(!pwd) {
-        document.getElementById('loginErr').innerText = '密码不能为空';
-        return;
-    }
-
-    let userData = localStorage.getItem('user_'+user);
-    if(!userData) {
-        document.getElementById('loginErr').innerText = '该账号不存在';
-        return;
-    }
-    let u = JSON.parse(userData);
-    if(u.pwd !== pwd) {
-        document.getElementById('loginErr').innerText = '密码输入错误';
-        return;
+    // 难度切换
+    function setDifficulty(level) {
+        currentDifficulty = level;
+        updateDifficultyParams();
+        resetAndNewGame();
+        // 激活样式
+        diffBtns.forEach(btn => {
+            if(btn.getAttribute('data-diff') === level) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        // 强制重置网格大小样式
+        boardContainer.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
     }
 
-    localStorage.setItem('loginUser', user);
-    loadUserInfo();
-    showPage('homePage');
-}
+    // 重置按钮逻辑
+    resetBtn.addEventListener('click', () => {
+        setDifficulty(currentDifficulty);
+    });
 
-// 加载用户信息
-function loadUserInfo() {
-    let loginUser = localStorage.getItem('loginUser');
-    if(!loginUser) return;
-    let u = JSON.parse(localStorage.getItem('user_'+loginUser));
+    diffBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const diff = btn.getAttribute('data-diff');
+            if (diff === 'easy') setDifficulty('easy');
+            else if (diff === 'medium') setDifficulty('medium');
+            else if (diff === 'hard') setDifficulty('hard');
+        });
+    });
 
-    document.getElementById('avatar').innerText = u.name.substring(0,1);
-    document.getElementById('home_username').innerText = u.user;
-    document.getElementById('home_coins').innerText = u.coins;
-    document.getElementById('home_gems').innerText = u.gems;
-    document.getElementById('my_points').innerText = u.points;
-    document.getElementById('recharge_coins').innerText = u.coins;
-    document.getElementById('recharge_gems').innerText = u.gems;
-}
-
-// 退出登录
-function logout() {
-    localStorage.removeItem('loginUser');
-    showPage('loginPage');
-}
-
-// 自动登录
-window.onload = function() {
-    if(localStorage.getItem('loginUser')) {
-        loadUserInfo();
-        showPage('homePage');
+    // 初始化默认游戏 (easy)
+    function init() {
+        updateDifficultyParams();
+        resetAndNewGame();
     }
-}
+    init();
 </script>
 </body>
 </html>
